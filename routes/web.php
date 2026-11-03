@@ -22,8 +22,16 @@ Route::get('/', function () {
 });
 
 // SSLCOMMERZ Start
-Route::get('/example1', 'App\Http\Controllers\SslCommerzPaymentController@exampleEasyCheckout');
-Route::get('/example2', 'App\Http\Controllers\SslCommerzPaymentController@exampleHostedCheckout');
+// Route::get('/example1', 'App\Http\Controllers\SslCommerzPaymentController@exampleEasyCheckout');
+// ui ux 
+Route::get('/uiux', 'App\Http\Controllers\SslCommerzPaymentController@uiux');
+// python
+Route::get('/python', 'App\Http\Controllers\SslCommerzPaymentController@python');
+
+// For Testing Controller
+Route::get('/demo', function(){
+    return view('demo');
+});
 
 Route::post('/pay', 'App\Http\Controllers\SslCommerzPaymentController@index');
 Route::post('/pay-via-ajax', 'App\Http\Controllers\SslCommerzPaymentController@payViaAjax');

@@ -14,9 +14,16 @@ class SslCommerzPaymentController extends Controller
         return view('exampleEasycheckout');
     }
 
-    public function exampleHostedCheckout()
+    // for ui ux course payment
+    public function uiux()
     {
-        return view('exampleHosted');
+        return view('uiux-course');
+    }
+
+    // for oython course payment
+    public function python()
+    {
+        return view('python-course');
     }
 
     public function index(Request $request)
@@ -58,10 +65,12 @@ class SslCommerzPaymentController extends Controller
         $post_data['product_profile'] = "physical-goods";
 
         # OPTIONAL PARAMETERS
-        $post_data['value_a'] = "ref001";
+        $post_data['value_a'] = $request->input('plan_id');
         $post_data['value_b'] = "ref002";
         $post_data['value_c'] = "ref003";
         $post_data['value_d'] = "ref004";
+        $post_data['created_at'] = date('Y-d-m');
+        $post_data['updated_at'] = date('Y-d-m');
 
         #Before  going to initiate the payment order status need to insert or update as Pending.
         $update_product = DB::table('orders')
@@ -74,12 +83,17 @@ class SslCommerzPaymentController extends Controller
                 'status' => 'Pending',
                 'address' => $post_data['cus_add1'],
                 'transaction_id' => $post_data['tran_id'],
-                'currency' => $post_data['currency']
+                'currency' => $post_data['currency'],
+                'plan_id' => $post_data['value_a'],
+                'created_at' => $post_data['created_at'],
+                'updated_at' => $post_data['updated_at'],
+
             ]);
 
         $sslc = new SslCommerzNotification();
         # initiate(Transaction Data , false: Redirect to SSLCOMMERZ gateway/ true: Show all the Payement gateway here )
         $payment_options = $sslc->makePayment($post_data, 'hosted');
+        // $payment_options = $sslc->makePayment($post_data, 'json');
 
         if (!is_array($payment_options)) {
             print_r($payment_options);
@@ -150,7 +164,7 @@ class SslCommerzPaymentController extends Controller
         $sslc = new SslCommerzNotification();
         # initiate(Transaction Data , false: Redirect to SSLCOMMERZ gateway/ true: Show all the Payement gateway here )
         $payment_options = $sslc->makePayment($post_data, 'checkout', 'json');
-
+        // dd($request);
         if (!is_array($payment_options)) {
             print_r($payment_options);
             $payment_options = array();
@@ -206,6 +220,7 @@ class SslCommerzPaymentController extends Controller
 
                 echo "<br>Transaction is successfully Completed"."<br>Transaction id: ".$tran_id."<br>Amount: ".$amount; 
                 dd($request->all());
+                // return redirect('/')->with('status', 'Success');
             } else {
                 /*
                 That means IPN did not work or IPN URL was not set in your merchant panel and Transation validation failed.
